@@ -60,42 +60,48 @@ function initDreams() {
         userId: 1,
         content: '在一片紫色的云海中漂浮，远处有一座发光的水晶城堡，城堡的塔尖直插云霄。',
         lucidity: 5,
-        date: '2026-06-01'
+        date: '2026-06-01',
+        archived: false
       },
       {
         id: 2,
         userId: 1,
         content: '梦见自己变成了一只鸟，在城市上空飞翔，下面的人群像蚂蚁一样小。',
         lucidity: 3,
-        date: '2026-06-05'
+        date: '2026-06-05',
+        archived: false
       },
       {
         id: 3,
         userId: 1,
         content: '在海底漫步，周围是五颜六色的珊瑚和会发光的鱼，我可以在水中呼吸。',
         lucidity: 4,
-        date: '2026-06-10'
+        date: '2026-06-10',
+        archived: false
       },
       {
         id: 4,
         userId: 1,
         content: '梦见了很久没见的老朋友，我们在一片向日葵花田里聊天。',
         lucidity: 2,
-        date: '2026-05-20'
+        date: '2026-05-20',
+        archived: false
       },
       {
         id: 5,
         userId: 1,
         content: '在太空里行走，地球就在脚下，星星近得伸手就能摸到。',
         lucidity: 5,
-        date: '2026-05-15'
+        date: '2026-05-15',
+        archived: false
       },
       {
         id: 6,
         userId: 1,
         content: '梦见自己在图书馆里，每本书打开都会飞出不同颜色的蝴蝶。',
         lucidity: 4,
-        date: '2026-06-12'
+        date: '2026-06-12',
+        archived: false
       }
     ];
     writeJSON(DREAMS_FILE, sampleDreams);
@@ -136,7 +142,8 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/dreams', authenticateToken, (req, res) => {
-  const dreams = readJSON(DREAMS_FILE).filter(d => d.userId === req.user.id);
+  const dreams = readJSON(DREAMS_FILE)
+    .filter(d => d.userId === req.user.id && !d.archived);
   res.json(dreams.sort((a, b) => new Date(b.date) - new Date(a.date)));
 });
 
@@ -152,7 +159,8 @@ app.post('/api/dreams', authenticateToken, (req, res) => {
     userId: req.user.id,
     content,
     lucidity: parseInt(lucidity),
-    date
+    date,
+    archived: false
   };
 
   dreams.push(newDream);
@@ -161,12 +169,41 @@ app.post('/api/dreams', authenticateToken, (req, res) => {
 });
 
 app.get('/api/dreams/random', authenticateToken, (req, res) => {
-  const userDreams = readJSON(DREAMS_FILE).filter(d => d.userId === req.user.id);
+  const userDreams = readJSON(DREAMS_FILE)
+    .filter(d => d.userId === req.user.id && !d.archived);
   if (userDreams.length === 0) {
     return res.status(404).json({ error: '还没有梦境记录' });
   }
   const randomDream = userDreams[Math.floor(Math.random() * userDreams.length)];
   res.json(randomDream);
+});
+
+app.get('/api/dreams/archived', authenticateToken, (req, res) => {
+  const dreams = readJSON(DREAMS_FILE)
+    .filter(d => d.userId === req.user.id && d.archived);
+  res.json(dreams.sort((a, b) => new Date(b.date) - new Date(a.date)));
+});
+
+app.put('/api/dreams/:id/archive', authenticateToken, (req, res) => {
+  const dreams = readJSON(DREAMS_FILE);
+  const dream = dreams.find(d => d.id === parseInt(req.params.id) && d.userId === req.user.id);
+  if (!dream) {
+    return res.status(404).json({ error: '梦境不存在' });
+  }
+  dream.archived = true;
+  writeJSON(DREAMS_FILE, dreams);
+  res.json(dream);
+});
+
+app.put('/api/dreams/:id/restore', authenticateToken, (req, res) => {
+  const dreams = readJSON(DREAMS_FILE);
+  const dream = dreams.find(d => d.id === parseInt(req.params.id) && d.userId === req.user.id);
+  if (!dream) {
+    return res.status(404).json({ error: '梦境不存在' });
+  }
+  dream.archived = false;
+  writeJSON(DREAMS_FILE, dreams);
+  res.json(dream);
 });
 
 app.get('/api/stats/monthly', authenticateToken, (req, res) => {

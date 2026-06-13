@@ -13,7 +13,9 @@ createApp({
     const loginError = ref('');
 
     const dreams = ref([]);
+    const archivedDreams = ref([]);
     const randomDream = ref(null);
+    const currentView = ref('home');
     const monthlyStats = ref({ count: 0, avgLucidity: 0 });
 
     const now = new Date();
@@ -124,7 +126,9 @@ createApp({
       isLoggedIn.value = false;
       user.value = null;
       dreams.value = [];
+      archivedDreams.value = [];
       randomDream.value = null;
+      currentView.value = 'home';
     }
 
     async function fetchDreams() {
@@ -164,6 +168,40 @@ createApp({
       fetchMonthlyStats();
     }
 
+    async function fetchArchivedDreams() {
+      try {
+        const data = await apiRequest('/dreams/archived');
+        archivedDreams.value = data;
+      } catch (e) {
+        console.error('获取归档梦境失败', e);
+      }
+    }
+
+    async function archiveDream(id) {
+      try {
+        await apiRequest(`/dreams/${id}/archive`, { method: 'PUT' });
+        loadData();
+        fetchArchivedDreams();
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function restoreDream(id) {
+      try {
+        await apiRequest(`/dreams/${id}/restore`, { method: 'PUT' });
+        fetchArchivedDreams();
+        loadData();
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    function switchToArchive() {
+      currentView.value = 'archive';
+      fetchArchivedDreams();
+    }
+
     async function addDream() {
       if (!newDream.value.content.trim()) {
         alert('请输入梦境内容');
@@ -191,6 +229,7 @@ createApp({
     function loadData() {
       fetchDreams();
       fetchMonthlyStats();
+      fetchArchivedDreams();
     }
 
     function createWhiteNoise() {
@@ -266,11 +305,16 @@ createApp({
       handleLogin,
       handleLogout,
       dreams,
+      archivedDreams,
       randomDream,
       monthlyStats,
       newDream,
+      currentView,
       fetchRandomDream,
       addDream,
+      archiveDream,
+      restoreDream,
+      switchToArchive,
       isPlaying,
       toggleWhiteNoise,
       selectedYear,

@@ -32,6 +32,13 @@
       <header class="header">
         <div class="header-left">
           <span class="logo">🌙 梦境碎片</span>
+          <nav class="nav-tabs">
+            <button class="nav-tab" :class="{ active: currentView === 'home' }" @click="currentView = 'home'">主页</button>
+            <button class="nav-tab" :class="{ active: currentView === 'archive' }" @click="switchToArchive">
+              📦 归档箱
+              <span v-if="archivedDreams.length > 0" class="badge">{{ archivedDreams.length }}</span>
+            </button>
+          </nav>
         </div>
         <div class="header-right">
           <button class="btn-icon" @click="toggleWhiteNoise" :class="{ active: isPlaying }">
@@ -43,6 +50,7 @@
       </header>
 
       <main class="content">
+        <template v-if="currentView === 'home'">
         <div class="stats-header">
           <h2 class="section-title">📊 月度统计</h2>
           <div class="stats-selector">
@@ -120,14 +128,42 @@
             <div v-for="dream in dreams" :key="dream.id" class="dream-item">
               <div class="dream-header">
                 <span class="dream-date">{{ dream.date }}</span>
-                <span class="dream-lucidity">
-                  <span v-for="n in 5" :key="n" class="star">{{ n <= dream.lucidity ? '★' : '☆' }}</span>
-                </span>
+                <div class="dream-actions">
+                  <span class="dream-lucidity">
+                    <span v-for="n in 5" :key="n" class="star">{{ n <= dream.lucidity ? '★' : '☆' }}</span>
+                  </span>
+                  <button class="btn-archive" @click="archiveDream(dream.id)" title="归档此梦境">📦</button>
+                </div>
               </div>
               <div class="dream-text">{{ dream.content }}</div>
             </div>
           </div>
         </div>
+        </template>
+
+        <template v-if="currentView === 'archive'">
+        <div class="archive-header">
+          <h2 class="section-title">📦 梦境归档箱</h2>
+          <p class="archive-desc">归档的梦境不会出现在默认列表和随机抽取池中，可以随时恢复</p>
+        </div>
+        <div class="card">
+          <div v-if="archivedDreams.length === 0" class="empty-dream">归档箱是空的，没有已归档的梦境</div>
+          <div v-else class="dream-list">
+            <div v-for="dream in archivedDreams" :key="dream.id" class="dream-item archived">
+              <div class="dream-header">
+                <span class="dream-date">{{ dream.date }}</span>
+                <div class="dream-actions">
+                  <span class="dream-lucidity">
+                    <span v-for="n in 5" :key="n" class="star">{{ n <= dream.lucidity ? '★' : '☆' }}</span>
+                  </span>
+                  <button class="btn-restore" @click="restoreDream(dream.id)" title="恢复此梦境">♻️ 恢复</button>
+                </div>
+              </div>
+              <div class="dream-text">{{ dream.content }}</div>
+            </div>
+          </div>
+        </div>
+        </template>
       </main>
     </div>
   </div>

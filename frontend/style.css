@@ -401,6 +401,115 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  position: relative;
+}
+
+.nav-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+.nav-tab.active {
+  background: rgba(167, 139, 250, 0.15);
+  border-color: rgba(167, 139, 250, 0.4);
+  color: #a78bfa;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-radius: 9px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.dream-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-archive {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.btn-archive:hover {
+  background: rgba(167, 139, 250, 0.2);
+  border-color: rgba(167, 139, 250, 0.4);
+  transform: scale(1.1);
+}
+
+.btn-restore {
+  padding: 4px 12px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 6px;
+  color: #34d399;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.btn-restore:hover {
+  background: rgba(52, 211, 153, 0.2);
+  border-color: rgba(52, 211, 153, 0.5);
+  transform: scale(1.05);
+}
+
+.dream-item.archived {
+  opacity: 0.75;
+  border-left: 3px solid #8b5cf6;
+}
+
+.dream-item.archived:hover {
+  opacity: 1;
+}
+
+.archive-header {
+  margin-bottom: 24px;
+}
+
+.archive-desc {
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
 @media (max-width: 768px) {
   .stats-section {
     grid-template-columns: 1fr;
@@ -416,5 +525,18 @@ body {
 
   .username {
     display: none;
+  }
+
+  .header-left {
+    gap: 10px;
+  }
+
+  .nav-tab {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .dream-actions {
+    gap: 6px;
   }
 }
